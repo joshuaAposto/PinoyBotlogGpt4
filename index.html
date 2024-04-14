@@ -1,335 +1,166 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8">
-  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css" integrity="sha512-DTOQO9RWCH3ppGqcWaEA1BIZOC6xxalwEsw9c2QQeAIftl+Vegovlnee1c9QX4TctnWMn13TZye+giMm8e2LwA==" crossorigin="anonymous" referrerpolicy="no-referrer" />
-  <meta http-equiv="X-UA-Compatible" content="IE=Edge">
-  <meta name="viewport" content="width=device-width, initial-scale=1">
-  <title>PinoyBotlogGPT4</title>
-  <link rel="stylesheet" href="style.css">
-  <style>
-    a{text-decoration: none}
-    ul{list-style-type: none}
-    *{padding: 0;margin: 0;box-sizing: border-box;}
-    .container{height: calc(100vh - 100px);width: 100%;font-family: Arial, sans-serif; overflow-y: scroll; padding-bottom: 100px;}
-    body{
-      background: #202023;
-    }
+ <meta charset="UTF-8">
+ <meta name="viewport" content="width=device-width, initial-scale=1.0">
+ <title>RANDOM-SHOTI</title>
+ <style>
+		html,
+		body   {
+				margin: 0;
+				padding: 0;
+				width: 100%;
+				height: 100%;
+				overflow: hidden;
+				display: flex;
+				justify-content: center;
+				align-items: center;
+				background-image: url("https://i.imgur.com/ZF6Ao89.jpeg");
+				background-size: cover;
+		}
 
-    header{
-      display: flex;
-      border-bottom: #727272 1px solid;
-      justify-content: space-between;
-    }
-    .H-nav,.H-title{padding: 10px}
-    header .H-nav button{
-      background: none;
-      border: none;
-      color: #F7F7F7;
-      font-size: 20px;
-      position: relative;
-      border-radius: 50%;
-      width: 50px;
-      height: 50px;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-    }
+		video {
+				width: 100%;
+				height: 90%; 
+				object-fit: cover;
+		}
 
-    header .H-title{
-      align-self: center;
-      background: none;
-      border-radius: 10px;
-    }
-    .H-gpt-version p{
-      font-size: 45px;
-      display: flex;
-    }
-    .H-extra{display: none}
+		.bg {
+				position: absolute;
+				top: 20px;
+				left: 50%;
+				transform: translateX(-50%);
+				width: 100%;
+				text-align: center;
+				z-index: 999;
+		}
 
-    @media (max-width: 700px){
-      .H-extra{display: block}
-    }
+		#video-container {
+				width: 80%;
+				height: 85vh;
+				margin-top: 40px;
+				position: relative;
+		}
 
-    .input-field {
-      display: flex;
-      align-items: center;
-      position: fixed;
-      bottom: 0;
-      left: 0;
-      width: 100%;
-      padding: 10px 20px;
-      background-color: black;
-    }
+		#video {
+		 width: 100%;
+		 border-radius: 10px;
+		 height: 80%;
+		 object-fit: cover;
+		 margin: auto;
+		 border: 2px solid transparent;
+		 animation: neon-border 2s linear infinite alternate; 
+		}
 
-    .text-message {
-      border: none;
-      border-radius: 30px;
-      padding: 15px 20px;
-      width: calc(100% - 90px);
-      font-size: 16px;
-      margin-right: 10px;
-    }
+		 @keyframes neon-border {
+				 from {
+				border-color: #ff0000;
+				box-shadow: 0 0 40px #202023, 0 0 20px #202023, 0 0 30px #202023; 
+				 }
+				 to {
+				border-color: #202023;
+				box-shadow: 0 0 20px violet, 0 0 40px violet, 0 0 60px violet;
+				 }
+		 }
 
-    #btn-send {
-      border: 2px solid #202023;
-      border-radius: 8px;
-      background-color: black;
-      color: white;
-      font-size: 16px;
-      padding: 12px 24px;
-      cursor: pointer;
-    }
+		#apiResponse {
+		 background-color: yellow;
+		 color: #fff;
+		}
 
-    .user-message {
-      border: 1px solid gray;
-      border-radius: 10px;
-      padding: 10px;
-      margin: 10px 20px;
-      justify-content: space-between;
-      display: flex;
-      gap: 6px;
-    }
-    .user-message .div{
-      color: white;
-      text-align: right;
-      flex: 1
-    }
-    
-    #user_pfp{
-      width: 30px;
-      border-radius: 50%;
-      border: 1px solid #959595;
-    }
-    .bot-message {
-      border: 1px solid gray;
-      border-radius: 10px;
-      padding: 10px;
-      margin: 10px 20px;
-      color: white;
-      justify-content: space-between;
-      display: flex;
-      gap: 6px;
-      position: relative;
-    }
-    .bot-message .div{
-      text-align: left;
-      flex: 1;
-    }
-    
-    .avatar {
-      display: none;
-    }
-    
-    .copy-icon {
-      position: absolute;
-      top: 5px;
-      right: 5px;
-      cursor: pointer;
-    }
-    
-    .copy-icon i {
-      color: #fff;
-      font-size: 16px;
-    }
-    
-    /* Logaks DIV */
-    .logaks{
-      position: absolute;
-      transform: translate(-50%,-50%);
-      top: 50%;
-      left: 50%;
-      text-align: center;
-      background: none;
-      width: 400px;
-      gap: 10px;
-      flex-direction: column;
-    }
-    .logaks-img img{
-      border-radius: 50%;
-    }
-    .logaks-txt h1{
-      font-size: 23px;
-      color: #F6F6F6;
-    }
-    @media (max-width: 700px){
-      .logaks{width:100%}
-    }
-  </style>
+		#next-button {
+		 position: absolute;
+		 bottom: 20px;
+		 padding: 20px 40px;
+		 font-size: 18px;
+		 background-color: #202023;
+		 color: red;
+		 border: none;
+		 border-radius: 10px;
+		 cursor: pointer;
+		 z-index: 999;
+		 background-image: linear-gradient(45deg, #202023, white); 
+		}
+
+		#next-button:hover {
+		 background-image: linear-gradient(45deg, #243aff 0%, 
+		black 46%, 
+		Black 100%);   
+		}
+
+		#next-button {
+		 right: calc(50% - 160px);
+		}
+
+		#title {
+		 position: absolute;
+		 top: 20px;
+		 left: 50%;
+		 transform: translateX(-50%);
+		 z-index: 999;
+		 font-size: 24px;
+		 color: #fff;
+		 animation: changeColor 5s infinite;
+		}
+
+		 @keyframes changeColor {
+				0% {
+						color: red;
+				}
+				16.66% {
+						color: gray;
+				}
+				33.33% {
+						color: black;
+				}
+				50% {
+						color: yellow;
+				}
+				66.66% {
+						color: blue;
+				}
+				83.33% {
+						color: gray;
+				}
+				100% {
+						color: violet;
+				}
+		 }
+
+ </style>
 </head>
 <body>
-  <header>
-    <div class="H-nav">
-      <button id="speech-button">
-        <i class="fa-solid fa-bars"></i>
-      </button>
-    </div>
-    <div class="H-title">
-      <div class="H-gpt-version">
-        <p><b style="color: white">
-        <span>BotlogGPT</span>
-        <span style="color: gray">4</span>
-        </b></p>
-      </div>
-    <div class="H-extra"></div>
-  </header>
-  <div id="container" class="container">
-    
-    <div class="logaks" style="display: flex">
-      <div class="logaks-img"><img src="https://i.imgur.com/Frz7Bof.png" alt="logo" width="100"></div>
-      <div class="logaks-txt"><h1>How can I help you today?</h1></div>
-    </div>
-    
-  </div>
-  <div class="input-field">
-    <input id="texts" type="text" class="text-message" placeholder="Message...">
-    <button id="btn-send" onclick="Logaks();sendMessage()"><i class="fa-solid fa-paper-plane"></i></button>
-  </div>
-  <audio id="userSound" src="user_sound.mp3"></audio>
-  <audio id="botSound" src="bot_sound.mp3"></audio>
-  <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
-  <script>
-    function Logaks(){
-      let nega = document.querySelector('.logaks')
-      let lok = nega.style.display;
-      if(lok === 'flex'){
-        document.querySelector('.logaks').style.display = 'none'
-      }else{
-        return;
-      }
-    }
-    function handleSpeechRecognition() {
-    const speechButton = document.getElementById('speech-button');
-    let recognizing = false;
-    let SpeechRecognition = window.SpeechRecognition || window.webkitSpeechRecognition;
-    let recognition = new SpeechRecognition();
- 
-    recognition.continuous = false;
-    recognition.interimResults = false;
- 
-    recognition.onstart = function() {
-      recognizing = true;
-      speechButton.classList.add('active'); 
-    };
- 
-    recognition.onerror = function(event) {
-      console.error('Speech recognition error:', event.error);
-    };
- 
-    recognition.onend = function() {
-      recognizing = false;
-      speechButton.classList.remove('active');
-      sendMessage(); 
-    };
- 
-    recognition.onresult = function(event) {
-      const transcript = event.results[0][0].transcript;
-      document.getElementById('texts').value = transcript;
-    };
- 
-    speechButton.addEventListener('click', function() {
-      if (recognizing) {
-        recognition.stop();
-        return;
-      }
-      recognition.start();
-    });
-  }
- 
-  handleSpeechRecognition();
- 
-  let c = document.getElementById('container');
-  let button = document.getElementById('btn-send');
-  let input = document.getElementById('texts');
-  let randomNumber = Math.floor(Math.random() * 1000) + 50;
-   
-  async function sendMessage() {
-    let userInput = input.value;
-    if (!userInput.trim()) return; 
-    input.value = '';
 
-    document.getElementById('userSound').play();
+		<div id="video-container">
+				<video id="video" controls autoplay></video>
+		</div>
 
-    let userMessage = document.createElement('div');
-    userMessage.classList.add('message', 'user-message');
-    userMessage.innerHTML = `
-      <div class="div"><p>${userInput}</p></div>
-      <div><img id="user_pfp" src="https://i.ibb.co/DGm6ZDq/1712834235007.jpg"></div>
-    `;
-    c.appendChild(userMessage);
-    c.scrollTop = c.scrollHeight;
+		<button id="next-button" style="border: 2px solid #808080; padding: 10px 20px; font-size: 16px;">ᑎE᙭T ᐯIᗪEO</button>
 
-    let processingMessage = document.createElement('div');
-    processingMessage.classList.add('message', 'bot-message');
-    processingMessage.innerText = "PinoyBotlogGPT 4 Turbo is processing your query, please wait for a moment.";
-    c.appendChild(processingMessage);
 
-    try {
-      let response = await getBotResponse(userInput);
-      c.removeChild(processingMessage);
+		<script>
+				async function getRandomVideo() {
+						try {
+								const url = 'https://shoti-srv1.onrender.com/api/v1/get';
+								const rawResponse = await fetch(url, {
+										method: 'POST',
+										headers: {
+												'Content-Type': 'application/json'
+										},
+										body: JSON.stringify({ apikey: "$shoti-1hg4gifgnlfdmeslom8" })
+								});
+								const content = await rawResponse.json();
+								document.getElementById('video').src = content.data.url;
+						} catch (e) {
+								console.error("Error fetching Shoti video", e);
+						}
+				}
 
-      let botMessage = document.createElement('div');
-      botMessage.classList.add('message', 'bot-message');
-      botMessage.innerHTML = response;
-      c.appendChild(botMessage);
+				getRandomVideo();
 
-      let copyIcon = document.createElement('div');
-      copyIcon.classList.add('copy-icon');
-      copyIcon.innerHTML = '<i class="fas fa-copy"></i>';
-      copyIcon.addEventListener('click', () => {
-        let botResponse = botMessage.querySelector('.div').innerText;
-        if (navigator.clipboard) {
-          navigator.clipboard.writeText(botResponse).then(() => {
-            alert("Copied to clipboard");
-          }).catch(err => {
-            console.error('Could not copy text: ', err);
-          });
-        } else {
-          const textArea = document.createElement('textarea');
-          textArea.value = botResponse;
-          document.body.appendChild(textArea);
-          textArea.select();
-          document.execCommand('copy');
-          document.body.removeChild(textArea);
-          alert("Copied to clipboard");
-        }
-      });
-      botMessage.appendChild(copyIcon);
-
-      document.getElementById('botSound').play();
-    } catch (error) {
-      console.error('Error:', error.message);
-      processingMessage.innerText = 'Error: ' + error.message;
-    }
-    c.scrollTop = c.scrollHeight;
-}
- 
-  button.addEventListener('click', sendMessage);
-  input.addEventListener('keypress', function(event) {
-    if (event.key === 'Enter') {
-      sendMessage();
-    }
-  });
- 
-  async function getBotResponse(userInput) {
-    let url = `https://deku-rest-api.onrender.com/gpt4?prompt=${userInput}&uid=${randomNumber}`;
-    let response = await fetch(url);
-    if (!response.ok) {
-      throw new Error('Network response was not ok');
-    }
-    let data = await response.json();
-    let botResponse = data.gpt4;
-    botResponse = botResponse.replace(/```(\w+)\s*([\s\S]*?)\s*```/g, (match, language, code) => {
-      return `<pre><code class="${language}">${code}</code></pre>`;
-    });
-    botResponse = botResponse.replace(/\n/g, '<br>'); 
-    return `
-      <div><img id="user_pfp" src="https://i.ibb.co/ZcBTYYz/IMG-20240411-192451.jpg"></div>
-      <div class='div'>${botResponse}</div>
-    `;
-  }
-  </script>
-  <script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-5625905404408423"
-     crossorigin="anonymous"></script>
+				document.getElementById('next-button').addEventListener('click', () => {
+						getRandomVideo();
+				});
+		</script>
 </body>
 </html>
