@@ -1,0 +1,237 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>ALL IN ONE MUSIC</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            margin: 0;
+            padding: 0;
+            background-color: #f9f9f9;
+        }
+
+        .container {
+            max-width: 800px;
+            margin: 0 auto;
+            padding: 20px;
+            background-color: #fff;
+            border-radius: 5px;
+            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+            margin-bottom: 20px;
+        }
+
+        header {
+            text-align: center;
+            margin-bottom: 20px;
+        }
+
+        header img {
+            max-width: 300px;
+            background-color: transparent;
+            margin-bottom: 20px;
+        }
+
+        nav {
+            text-align: center;
+            margin-bottom: 20px;
+        }
+
+        ul {
+            list-style-type: none;
+            padding: 0;
+            margin: 0;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+        }
+
+        li {
+            margin: 0 10px;
+        }
+
+        li a {
+            color: #333;
+            text-decoration: none;
+            padding: 10px 20px;
+            border: 1px solid #ccc;
+            border-radius: 5px;
+            transition: background-color 0.3s ease;
+        }
+
+        li a:hover {
+            background-color: #ddd;
+        }
+
+        main {
+            text-align: center;
+        }
+
+        .music-folder {
+            margin-bottom: 20px;
+            background-color: #fff;
+            padding: 20px;
+            border-radius: 5px;
+            border: 2px solid violet;
+            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+            display: none;
+        }
+
+        .music-folder.open {
+            display: block;
+        }
+
+        h3 {
+            margin-top: 0;
+        }
+
+        p {
+            margin-bottom: 10px;
+        }
+
+        audio {
+            width: 100%;
+        }
+
+        .glitch {
+            color: rgb(223, 191, 191);
+            position: relative;
+            font-size: 9vw;
+            animation: glitch 3s 3s infinite;
+        }
+
+        .glitch::before {
+            content: attr(data-text);
+            position: absolute;
+            left: -2px;
+            text-shadow: -5px 0 magenta;
+            overflow: hidden;
+            top: 0;
+            animation: noise-1 2s linear infinite alternate-reverse, glitch 5s 5.05s infinite;
+        }
+
+        .glitch::after {
+            content: attr(data-text);
+            position: absolute;
+            left: 2px;
+            text-shadow: -5px 0 lightgreen;
+            overflow: hidden;
+            top: 0;
+            animation: noise-2 3s linear infinite alternate-reverse, glitch 3s 3s infinite;
+        }
+
+        @keyframes glitch {
+            1% {
+                transform: rotateX(10deg) skewX(90deg);
+            }
+            2% {
+                transform: rotateX(0deg) skewX(0deg);
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <header>
+            <img src="https://i.imgur.com/urAAgmJ.png" alt="Music Library Logo">
+        </header>
+        <nav>
+            <ul id="folders"></ul>
+        </nav>
+        <main id="music-list">
+        </main>
+    </div>
+    <script>
+        function stopOtherPlayers(currentAudio) {
+            const allAudioTags = document.querySelectorAll('audio');
+            allAudioTags.forEach(audio => {
+                if (audio !== currentAudio && !audio.paused) {
+                    audio.pause();
+                }
+            });
+        }
+
+        function playNext(currentIndex) {
+            const nextIndex = currentIndex + 1;
+            const currentAudio = document.querySelectorAll('audio')[currentIndex];
+            if (nextIndex < currentAudio.parentNode.parentNode.children.length) {
+                const nextAudio = document.querySelectorAll('audio')[nextIndex];
+                nextAudio.parentNode.addEventListener('click', function() {
+                    nextAudio.play();
+                });
+            }
+        }
+
+        const folders = [
+            { name: "Music", music: [
+                { title: "Chocolate Factory - KUNG IKA'Y AKIN (Live Recording)", artist: "chocolate factory", src: "Chocolate Factory - KUNG IKA'Y AKIN (Live Recording).mp3" },
+                { title: "Pink Sweat$ - At My Worst  Tropavibes Reggae Cover Ft. Jason Park", artist: "Pink Sweat$", src: "Pink Sweat$ - At My Worst  Tropavibes Reggae Cover Ft. Jason Park.mp3" },
+                { title: "𝗦𝗘𝗟𝗢𝗦 (𝙼𝚞𝚜𝚒𝚌 𝚅𝚒𝚍𝚎𝚘) 𝘣𝘺 𝗦𝗵𝗮𝗶𝗿𝗮", artist: "shaira", src: "𝗦𝗘𝗟𝗢𝗦 (𝙼𝚞𝚜𝚒𝚌 𝚅𝚒𝚍𝚎𝚘) 𝘣𝘺 𝗦𝗵𝗮𝗶𝗿𝗮.mp3" },
+                { title: "5 LITTLE MONKEY HUMPTY DUMPTY REMIX", artist: "remix by Sean ai", src: "5 LITTLE MONKEY HUMPTY DUMPTY REMIX.mp3" },
+                { title: "STUCK ON YOU (reggae)", artist: "reggaemaniac", src: "STUCK ON YOU (reggae).mp3" },
+                { title: "You're Still the One Reggae Cover (Vivoree ft. Dj Rotbart)", artist: "reggae cover", src: "You're Still the One Reggae Cover (Vivoree ft. Dj Rotbart).mp3" },
+                { title: "Calein - Umaasa (Official Lyric Video)", artist: "Calein", src: "Calein - Umaasa (Official Lyric Video).mp3" },
+            ] },
+            { name: "Others", music: [], comingSoon: true }
+        ];
+
+        document.addEventListener("DOMContentLoaded", function() {
+            const foldersList = document.getElementById("folders");
+            const musicList = document.getElementById("music-list");
+
+            folders.forEach(folder => {
+                const li = document.createElement("li");
+                const a = document.createElement("a");
+                a.textContent = folder.name;
+                a.href = "#";
+                a.addEventListener("click", () => toggleMusic(folder));
+                li.appendChild(a);
+                foldersList.appendChild(li);
+            });
+
+            function toggleMusic(folder) {
+                const folderIndex = folders.findIndex(item => item === folder);
+                const folderElement = foldersList.children[folderIndex];
+
+                if (folderElement.classList.contains("open")) {
+                    folderElement.classList.remove("open");
+                    musicList.innerHTML = "";
+                } else {
+                    closeAllFolders();
+                    folderElement.classList.add("open");
+                    displayMusic(folder);
+                }
+            }
+
+            function displayMusic(folder) {
+                musicList.innerHTML = "";
+                if (folder.comingSoon) {
+                    const div = document.createElement("div");
+                    div.classList.add("music-folder");
+                    div.classList.add("open");
+                    div.innerHTML = `<h3 class="glitch" data-text="Coming soon: More Music">Coming soon: More Music</h3>`;
+                    musicList.appendChild(div);
+                } else {
+                    folder.music.forEach((song, index) => {
+                        const div = document.createElement("div");
+                        div.classList.add("music-folder");
+                        div.classList.add("open");
+                        div.innerHTML = `<h3>${song.title}</h3><p>Artist: ${song.artist}</p><audio controls onplay="stopOtherPlayers(this)" onended="playNext(${index})"><source src="${song.src}" type="audio/mpeg"></audio>`;
+                        musicList.appendChild(div);
+                    });
+                }
+            }
+
+            function closeAllFolders() {
+                Array.from(foldersList.children).forEach(folderElement => {
+                    folderElement.classList.remove("open");
+                });
+            }
+        });
+    </script>
+    <footer style="text-align: center; margin-top: 20px;">
+        <p>© 2024 Joshua Apostol. All rights reserved. All materials on this website, including text, graphics, and other content, are the property of Joshua Apostol and are protected by international copyright laws. Unauthorized use, reproduction, or distribution of any content from this website is strictly prohibited without prior written permission from Joshua Apostol.</p>
+    </footer>
+</body>
+</html>
